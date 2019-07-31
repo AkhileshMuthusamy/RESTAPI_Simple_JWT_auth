@@ -8,6 +8,7 @@ const logger = require('morgan');
 const { port, appUrl, databaseUrl } = require('./config');
 //Import Routes
 const authRoute = require('./routes/auth');
+const postsRoute = require('./routes/posts');
 
 mongoose.connect(databaseUrl, { useNewUrlParser: true }, () => {
     console.log('Connected to db!');
@@ -19,7 +20,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }))
 //Route Middlewares
 app.use('/api/user', authRoute);
-
+app.use('/api/posts', postsRoute);
 
 app.get('/', (req, res) => {
     res.send('Server is up and running!');
