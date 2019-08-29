@@ -10,22 +10,28 @@ const { port, appUrl, databaseUrl } = require('./config');
 const authRoute = require('./routes/auth');
 const postsRoute = require('./routes/posts');
 
-mongoose.connect(databaseUrl, { useNewUrlParser: true }, () => {
+mongoose
+  .connect(databaseUrl, { useNewUrlParser: true })
+  .then(() => {
     console.log('Connected to db!');
-});
-
+  })
+  .catch(error => {
+    error => {
+      console.error(error);
+    };
+  });
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }));
 //Route Middlewares
 app.use('/api/user', authRoute);
 app.use('/api/posts', postsRoute);
 
 app.get('/', (req, res) => {
-    res.send('Server is up and running!');
+  res.send('Server is up and running!');
 });
 
 app.listen(port, () => {
-    console.log(`Server listening on ${appUrl}`);
+  console.log(`Server listening on ${appUrl}`);
 });
