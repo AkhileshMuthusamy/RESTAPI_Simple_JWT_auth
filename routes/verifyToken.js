@@ -3,9 +3,10 @@ const jwt = require('jsonwebtoken');
 function auth(req, res, next) {
   const token = req.header('auth-token');
 
-  console.log(`Remote Port: ${req.socket.remotePort}`);
+  /** Session based ip */
   console.log(`Remote IP: ${req.socket.remoteAddress}`);
-  console.log(`X-Forwarded-For: ${req.headers['X-Forwarded-For']}`);
+  //   console.log(`X-Forwarded-For: ${req.headers['X-Forwarded-For']}`); //Not working
+  /** Public ip */
   console.log(`IP: ${req.ip}`);
 
   if (!token) return res.status(401).send('Access Denied');
