@@ -21,9 +21,12 @@ mongoose
     };
   });
 
+app.enable('trust proxy');
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
 //Route Middlewares
 app.use('/api/user', authRoute);
 app.use('/api/posts', postsRoute);

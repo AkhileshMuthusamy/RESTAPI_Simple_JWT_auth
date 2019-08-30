@@ -6,6 +6,7 @@ function auth(req, res, next) {
   console.log(`Remote Port: ${req.socket.remotePort}`);
   console.log(`Remote IP: ${req.socket.remoteAddress}`);
   console.log(`X-Forwarded-For: ${req.headers['X-Forwarded-For']}`);
+  console.log(`IP: ${req.ip}`);
 
   if (!token) return res.status(401).send('Access Denied');
 
