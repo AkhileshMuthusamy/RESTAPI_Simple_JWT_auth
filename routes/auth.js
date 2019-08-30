@@ -53,7 +53,7 @@ router.post('/login', (req, res) => {
          * Create and assign a token
          * expiresIn: seconds
          */
-        jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: 1 }, (error, token) => {
+        jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: 60 * 1 }, (error, token) => {
           if (error) {
             console.error(error.message);
             return res.status(500).json({
