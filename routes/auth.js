@@ -56,16 +56,26 @@ router.post('/login', (req, res) => {
         jwt.sign({ _id: user._id, ip: req.ip }, process.env.TOKEN_SECRET, { expiresIn: 60 * 1 }, (error, token) => {
           if (error) {
             console.error(error.message);
-            return res.status(500).json({
-              error: 'Error signing token',
-              raw: error.message
-            });
+            return res.status(500).json({ error: 'Error signing token', raw: error.message });
           }
 
-          return res.status(200).json({
-            success: true,
-            token: `Bearer ${token}`
-          });
+          jwt.sign(
+            { _id: user._id, ip: req.ip },
+            process.env.REFRESH_TOKEN_SECRET,
+            { expiresIn: 60 * 3 },
+            (error, refreshToken) => {
+              if (error) {
+                console.error(error.message);
+                return res.status(500).json({ error: 'Error signing refresh token', raw: error.message });
+              }
+
+              return res.status(200).json({
+                success: true,
+                token: `Bearer ${token}`,
+                refreshToken: `Bearer ${refreshToken}`
+              });
+            }
+          );
         });
       } else {
         console.log('Password mismatch');

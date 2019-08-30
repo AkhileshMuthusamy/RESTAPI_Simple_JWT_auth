@@ -9,16 +9,20 @@ function auth(req, res, next) {
   /** Public ip */
   console.log(`IP: ${req.ip}`);
 
-  if (!token) return res.status(401).send('Access Denied');
+  if (!token) return res.status(401).json({ error: 'Access Denied' });
 
-  try {
-    const verified = jwt.verify(token, process.env.TOKEN_SECRET);
-    console.log(verified);
-    req.user = verified;
-    next();
-  } catch (err) {
-    res.status(400).send('Invalid token');
-  }
+  jwt.verify(token, process.env.TOKEN_SECRET, (error, payload) => {
+    if (error) return res.status(400).json({ error: 'Invalid token', messsage: error.messsage });
+
+    console.log(payload);
+
+    if (payload.ip == req.ip) {
+      req.user = payload;
+      next();
+    } else {
+      return res.status(400).json({ error: 'Invalid token zone' });
+    }
+  });
 }
 
 module.exports = auth;
