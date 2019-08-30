@@ -40,33 +40,35 @@ router.post('/login', async (req, res) => {
   const user = await userModel.findOne({ email: req.body.email });
   if (!user) return res.status(400).send("Email doesn't exists");
 
-  // Check if password is valid
   console.dir(user._id);
-  const validPass = bcrypt.compareSync(req.body.password, user.password);
-  if (!validPass) return res.status(400).send('Invalid password');
+  // Check if password is valid
+  bcrypt.compare(req.body.password, user.password).then(isMatch => {
+    console.log(isMatch);
+    if (isMatch) {
+      console.log('Password matched');
+      /**
+       * Create and assign a token
+       * expiresIn: seconds
+       */
+      jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: 1 }, (error, token) => {
+        if (error) {
+          console.error(error.message);
+          return res.status(500).json({
+            error: 'Error signing token',
+            raw: error.message
+          });
+        }
 
-  /**
-   * Create and assign a token
-   * expiresIn: seconds
-   */
-  jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: 1 }, (error, token) => {
-    if (error) {
-      console.error(error.message);
-      return res.status(500).json({
-        error: 'Error signing token',
-        raw: error.message
+        return res.status(200).json({
+          success: true,
+          token: `Bearer ${token}`
+        });
       });
+    } else {
+      console.log('Password mismatch');
+      return res.status(400).json({ error: 'Invalid password' });
     }
-
-    res.status(200).json({
-      success: true,
-      token: `Bearer ${token}`
-    });
   });
-  // res
-  //   .header('auth-token', token)
-  //   .status(200)
-  //   .send(token);
 });
 
 module.exports = router;
