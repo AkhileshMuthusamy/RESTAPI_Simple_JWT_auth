@@ -9,6 +9,7 @@ const { port, appUrl, databaseUrl } = require('./config');
 //Import Routes
 const authRoute = require('./routes/auth');
 const postsRoute = require('./routes/posts');
+const tokenRoute = require('./routes/token');
 
 mongoose
   .connect(databaseUrl, { useNewUrlParser: true })
@@ -30,6 +31,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //Route Middlewares
 app.use('/api/user', authRoute);
 app.use('/api/posts', postsRoute);
+app.use('/api/token', tokenRoute);
 
 app.get('/', (req, res) => {
   res.send('Server is up and running!');
