@@ -49,9 +49,13 @@ router.post('/login', async (req, res) => {
    * Create and assign a token
    * expiresIn: seconds
    */
-  const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: 1 }, (error, token) => {
+  jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: 1 }, (error, token) => {
     if (error) {
-      res.status(500).json({ error: 'Error signing token', raw: error });
+      console.error(error.message);
+      return res.status(500).json({
+        error: 'Error signing token',
+        raw: error.message
+      });
     }
 
     res.status(200).json({
