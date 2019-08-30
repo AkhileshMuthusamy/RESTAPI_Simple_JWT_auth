@@ -49,11 +49,20 @@ router.post('/login', async (req, res) => {
    * Create and assign a token
    * expiresIn: seconds
    */
-  const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: 1 });
-  res
-    .header('auth-token', token)
-    .status(200)
-    .send(token);
+  const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: 1 }, (error, token) => {
+    if (error) {
+      res.status(500).json({ error: 'Error signing token', raw: error });
+    }
+
+    res.status(200).json({
+      success: true,
+      token: `Bearer ${token}`
+    });
+  });
+  // res
+  //   .header('auth-token', token)
+  //   .status(200)
+  //   .send(token);
 });
 
 module.exports = router;
