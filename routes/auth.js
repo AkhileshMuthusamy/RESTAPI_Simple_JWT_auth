@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userModel = require('../model/user');
 const { registerValidation, loginValidation } = require('../helper/validation');
+const signToken = require('../middleware/signToken');
 
 router.post('/register', async (req, res) => {
   // LETS VALIDATE THE DATE BEFORE CREATING A USER
@@ -49,34 +50,15 @@ router.post('/login', (req, res) => {
       console.log(isMatch);
       if (isMatch) {
         console.log('Password matched');
-        /**
-         * Create and assign a token
-         * expiresIn: seconds
-         */
-        jwt.sign({ _id: user._id, ip: req.ip }, process.env.TOKEN_SECRET, { expiresIn: 60 * 1 }, (error, token) => {
-          if (error) {
-            console.error(error.message);
+
+        signToken({ _id: user._id, ip: req.ip })
+          .then(token => {
+            res.status(200).json(token);
+          })
+          .catch(error => {
+            console.log(error);
             return res.status(500).json({ error: 'Error signing token', raw: error.message });
-          }
-
-          jwt.sign(
-            { _id: user._id, ip: req.ip },
-            process.env.REFRESH_TOKEN_SECRET,
-            { expiresIn: 60 * 3 },
-            (error, refreshToken) => {
-              if (error) {
-                console.error(error.message);
-                return res.status(500).json({ error: 'Error signing refresh token', raw: error.message });
-              }
-
-              return res.status(200).json({
-                success: true,
-                token: `Bearer ${token}`,
-                refreshToken: `Bearer ${refreshToken}`
-              });
-            }
-          );
-        });
+          });
       } else {
         console.log('Password mismatch');
         return res.status(400).json({ error: 'Invalid password' });

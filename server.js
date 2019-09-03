@@ -3,6 +3,7 @@ const app = express();
 const numCPUs = require('os').cpus().length;
 console.log('CPUs:' + numCPUs);
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const logger = require('morgan');
 const { port, appUrl, databaseUrl } = require('./config');
@@ -23,7 +24,7 @@ mongoose
   });
 
 app.enable('trust proxy');
-
+app.use(cors());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

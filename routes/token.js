@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
+const signToken = require('../middleware/signToken');
 
 router.get('/', (req, res) => {
   const token = req.header('auth-token');
@@ -11,7 +12,14 @@ router.get('/', (req, res) => {
     console.log(payload);
 
     if (payload.ip == req.ip) {
-      res.status(200).json({ token: 'token' });
+      signToken({ _id: payload._id, ip: req.ip })
+        .then(token => {
+          res.status(200).json(token);
+        })
+        .catch(error => {
+          console.log(error);
+          return res.status(500).json({ error: 'Error signing token', raw: error.message });
+        });
     } else {
       return res.status(400).json({ error: 'Invalid token zone' });
     }
